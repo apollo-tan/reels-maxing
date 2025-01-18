@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Grid, Container, Typography, CircularProgress } from "@mui/material";
+import { Grid, Container, Typography, CircularProgress, Box } from "@mui/material";
 import Carousel from "./components/Carousel";
 
 // Main App component displaying multiple video streams using MUI Grid
