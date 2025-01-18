@@ -1,5 +1,11 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Grid, Container, Typography, CircularProgress, Box } from "@mui/material";
+import {
+  Grid,
+  Container,
+  Typography,
+  CircularProgress,
+  Box,
+} from "@mui/material";
 import Carousel from "./components/Carousel";
 
 // Main App component displaying multiple video streams using MUI Grid
@@ -12,23 +18,23 @@ const App = () => {
     setScrollTop(e.currentTarget.scrollTop);
   };
 
-  // Fetch stream URLs from the Flask API when the component mounts
+  // Fetch stream URLs from the new cached endpoint when the component mounts
   useEffect(() => {
     console.log("useEffect called - Mounting");
     const fetchStreamUrls = async () => {
       try {
-        console.log("Fetching stream URLs...");
+        console.log("Fetching cached stream URLs...");
         const response = await fetch(
-          "http://127.0.0.1:5000/api/shorts?query=keqing"
+          "http://127.0.0.1:5000/api/cached_streams" // New endpoint to fetch cached streams
         );
         const data = await response.json();
-        console.log("Received stream URLs:", data);
+        console.log("Received cached stream URLs:", data);
 
         if (data.stream_urls) {
           setVideoStreams(data.stream_urls); // Set stream URLs to state
         }
       } catch (error) {
-        console.error("Error fetching stream URLs:", error);
+        console.error("Error fetching cached stream URLs:", error);
       } finally {
         setLoading(false); // Stop loading after request is done
         console.log("Loading complete");
@@ -53,6 +59,8 @@ const App = () => {
       </Container>
     );
   }
+
+  console.log(videoStreams.length * 6)
 
   return (
     <Container
@@ -81,16 +89,12 @@ const App = () => {
           zIndex: 10,
           overflowY: "scroll",
           scrollSnapType: "y mandatory", // Enable scroll snapping vertically
-          "&::-webkit-scrollbar": {
-            display: "none", // Chrome, Safari, and newer versions of Edge
-          },
-          scrollbarWidth: "none", // Firefox
         }}
         onScroll={handleScroll}
       >
         <Box
           sx={{
-            height: "200vh", // Content taller than the container to make scrolling possible
+            height: `${videoStreams.length * 6}vh`, // Content taller than the container to make scrolling possible
             display: "flex",
             flexDirection: "column",
             scrollSnapAlign: "start", // Snap to the start of each item
@@ -117,7 +121,11 @@ const App = () => {
             }}
             key={index}
           >
-            <Carousel scrollTop={scrollTop} videoStream={videoStreams[index]} />
+            <Carousel
+              scrollTop={scrollTop}
+              videoStreams={videoStreams}
+              index={index}
+            />
           </Grid>
         ))}
       </Grid>
