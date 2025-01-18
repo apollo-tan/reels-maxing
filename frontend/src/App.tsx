@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useRef } from "react";
 import ReactPlayer from "react-player";
 import {
     Container,
@@ -6,26 +5,38 @@ import {
     Typography,
     CircularProgress,
     Button,
+    Box,
 } from "@mui/material";
 
+import React, { useRef, useEffect, useState } from "react";
+import Carousel from "./components/Carousel";
+
+// Main App component displaying multiple video streams using MUI Grid
 const App = () => {
+    const [scrollTop, setScrollTop] = useState<number>(0);
     const [videoStreams, setVideoStreams] = useState<string[]>([]); // State to hold stream URLs
     const [loading, setLoading] = useState<boolean>(true); // Loading state
+
+    const handleScroll = (e: React.UIEvent<HTMLElement>) => {
+        setScrollTop(e.currentTarget.scrollTop);
+    };
     const [isMuted, setIsMuted] = useState<boolean>(true); // State to manage mute/unmute status
     const playerRefs = useRef<(ReactPlayer | null)[]>([]); // Store refs for all players
     const fetchRef = useRef(false); // Ref to track if fetch is already done
 
-    // Fetch stream URLs from your API when the component mounts
+    // Fetch stream URLs from the Flask API when the component mounts
     useEffect(() => {
+        console.log("useEffect called - Mounting");
         const fetchStreamUrls = async () => {
             if (fetchRef.current) return; // If fetch has already been called, skip
-            fetchRef.current = true; // Mark that fetch has been called
-
+            fetchRef.current = true;
             try {
+                console.log("Fetching stream URLs...");
                 const response = await fetch(
-                    "http://127.0.0.1:5000/api/shorts?query=funny"
+                    "http://127.0.0.1:5000/api/shorts?query=keqing"
                 );
                 const data = await response.json();
+                console.log("Received stream URLs:", data);
 
                 if (data.stream_urls) {
                     setVideoStreams(data.stream_urls); // Set stream URLs to state
@@ -34,6 +45,7 @@ const App = () => {
                 console.error("Error fetching stream URLs:", error);
             } finally {
                 setLoading(false); // Stop loading after request is done
+                console.log("Loading complete");
             }
         };
 
@@ -65,45 +77,91 @@ const App = () => {
     }
 
     return (
-        <Container>
-            <Typography variant="h4" gutterBottom>
-                Video Stream Player Grid
-            </Typography>
-
-            {/* Mute/Unmute Button */}
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleMuteUnmuteAll}
-                style={{ marginBottom: "20px" }}
+        <Container
+            maxWidth={false}
+            disableGutters
+            style={{
+                background: "#d1c4e9", // Purple background
+                height: "100vh",
+                width: "100vw",
+                margin: 0,
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+            }}
+        >
+            <Box
+                sx={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: "100vh",
+                    backgroundColor: "rgba(0, 0, 0, 0.1)",
+                    zIndex: 10, // Keep this higher than the background to not block interaction
+                    overflowY: "scroll",
+                    scrollSnapType: "y mandatory", // Enable scroll snapping vertically
+                    "&::-webkit-scrollbar": {
+                        display: "none", // Chrome, Safari, and newer versions of Edge
+                    },
+                    scrollbarWidth: "none", // Firefox
+                }}
+                onScroll={handleScroll}
             >
-                {isMuted ? "Unmute All" : "Mute All"}
-            </Button>
+                <Box
+                    sx={{
+                        height: "200vh", // Content taller than the container to make scrolling possible
+                        display: "flex",
+                        flexDirection: "column",
+                        scrollSnapAlign: "start", // Snap to the start of each item
+                    }}
+                ></Box>
+            </Box>
 
-            <Grid container spacing={2} justifyContent="center">
-                {videoStreams.map((url, index) => (
+            <Grid
+                container
+                spacing={2}
+                style={{
+                    padding: "1px",
+                    height: "100%",
+                }}
+            >
+                {Array.from({ length: 10 }).map((_, index) => (
                     <Grid
                         item
-                        xs={12}
+                        xs={6}
                         sm={6}
-                        md={2.4} // Approximates 5 columns in a 12-column grid
-                        style={{ maxWidth: "20%" }} // Forces 5 items per row
+                        md={2.4}
+                        style={{
+                            height: "calc(50% - 16px)",
+                        }}
                         key={index}
                     >
-                        <ReactPlayer
-                            ref={(el) => (playerRefs.current[index] = el)} // Assign the player ref
-                            url={url}
-                            playing={true} // Autoplay each video
-                            muted={isMuted} // Mute or unmute based on the state
-                            controls={true} // Show controls (play/pause, volume, etc.)
-                            loop={true} // Loop video playback
-                            width="100%" // Full-width player
-                            height="auto" // Auto-adjust height
-                            volume={0.1} // Set initial volume to 10%
+                        <Carousel
+                            scrollTop={scrollTop}
+                            videoStream={videoStreams[index]}
                         />
                     </Grid>
                 ))}
             </Grid>
+
+            {/* Mute/Unmute Button */}
+            <Button
+                variant="contained"
+                color={isMuted ? "default" : "primary"}
+                onClick={handleMuteUnmuteAll}
+                style={{
+                    position: "absolute",
+                    bottom: "20px", // Position the button at the bottom
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    zIndex: 20,
+                }}
+            >
+                {isMuted ? "Unmute All" : "Mute All"}
+            </Button>
         </Container>
     );
 };
