@@ -1,0 +1,14 @@
+services:
+  frontend:
+    build:
+      context: ./frontend  # Path to the frontend folder containing the Dockerfile
+    ports:
+      - "8080:80"  # Mapping port 8080 to 80 on the container
+    container_name: vite-frontend
+    networks:
+      - app-network
+    environment:
+      - VITE_APP_URL=http://localhost:8080
+networks:
+  app-network:
+    driver: bridge
