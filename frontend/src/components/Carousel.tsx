@@ -1,64 +1,56 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
-import { useInView } from "react-intersection-observer";
 import { VideoPlayer } from "./VideoPlayer"; // Import your VideoPlayer component
 import { DUMMY_VIDEO } from "../dummy";
 
-const Carousel: React.FC = () => {
-  const [items, setItems] = useState<number[]>(
-    Array.from({ length: 5 }, (_, i) => i + 1)
-  );
-  const [loading, setLoading] = useState<boolean>(false);
+interface CarouselProps {
+  scrollTop: number;
+}
 
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 1,
-  });
+const Carousel: React.FC<CarouselProps> = ({ scrollTop }) => {
+  const carouselRef = useRef<HTMLDivElement>(null);
 
+  // Scroll the carousel to the new scrollTop position smoothly
   useEffect(() => {
-    if (inView && !loading) {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        setItems((prev) => [
-          ...prev,
-          ...Array.from({ length: 5 }, (_, i) => prev.length + i + 1),
-        ]);
-      }, 1000); // Simulating fetch delay
+    if (carouselRef.current) {
+      carouselRef.current.scrollTo({
+        top: scrollTop,
+        behavior: "smooth", // Smooth scroll behavior
+      });
     }
-  }, [inView, loading]);
+  }, [scrollTop]);
 
   return (
     <Box
+      ref={carouselRef}
       sx={{
-        height: "100%", // Full viewport height
+        height: "100%",
         width: "100%",
         overflowY: "scroll",
         scrollSnapType: "y mandatory",
         flexDirection: "column",
         position: "relative",
-        // Hide scrollbar
         scrollbarWidth: "none", // Firefox
         "&::-webkit-scrollbar": {
           display: "none", // Chrome, Safari
         },
       }}
     >
-      {items.map((item) => (
+      {/* Render items inside the carousel */}
+      {Array.from({ length: 5 }).map((_, index) => (
         <Box
-          key={item}
+          key={index}
           sx={{
             height: "100%", // Full viewport height for each box
             display: "flex",
-            padding: "1%",
+            padding: "1% ",
             margin: "1%",
             alignItems: "center",
             justifyContent: "center",
             scrollSnapAlign: "start",
-            // Removed the red background and black border
           }}
         >
-          <VideoPlayer streamUrl={DUMMY_VIDEO} /> {/* Replace with your video source */}
+          <VideoPlayer streamUrl={DUMMY_VIDEO} />
         </Box>
       ))}
     </Box>
