@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 app = Flask(__name__)
 CORS(app)
 
-def extract_shorts_urls(url, max_results=10):
+def extract_shorts_urls(url, max_results=3):
     """Extracts YouTube Shorts URLs from a given search URL."""
     response = requests.get(url)
     if response.status_code == 200:

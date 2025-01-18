@@ -1,43 +1,26 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Grid, Container, Typography, CircularProgress } from "@mui/material";
+import React, { useState, useEffect, useRef } from "react";
+import ReactPlayer from "react-player";
+import {
+    Container,
+    Grid,
+    Typography,
+    CircularProgress,
+    Button,
+} from "@mui/material";
 
-// Video player component for a video stream
-const VideoPlayer = ({ streamUrl }: { streamUrl: string }) => {
-    const videoRef = useRef<HTMLVideoElement | null>(null);
-
-    useEffect(() => {
-        if (videoRef.current) {
-            // Set volume to 50% when the video is ready
-            videoRef.current.volume = 0.5;
-        }
-    }, []);
-
-    return (
-        <div className="video-container">
-            <video
-                ref={videoRef}
-                width="100%"
-                height="315"
-                autoPlay
-                muted // Ensure it's not muted
-                playsInline
-                loop
-                src={streamUrl}
-            >
-                Your browser does not support the video tag.
-            </video>
-        </div>
-    );
-};
-
-// Main App component displaying multiple video streams using MUI Grid
 const App = () => {
     const [videoStreams, setVideoStreams] = useState<string[]>([]); // State to hold stream URLs
     const [loading, setLoading] = useState<boolean>(true); // Loading state
+    const [isMuted, setIsMuted] = useState<boolean>(true); // State to manage mute/unmute status
+    const playerRefs = useRef<(ReactPlayer | null)[]>([]); // Store refs for all players
+    const fetchRef = useRef(false); // Ref to track if fetch is already done
 
-    // Fetch stream URLs from the Flask API when the component mounts
+    // Fetch stream URLs from your API when the component mounts
     useEffect(() => {
         const fetchStreamUrls = async () => {
+            if (fetchRef.current) return; // If fetch has already been called, skip
+            fetchRef.current = true; // Mark that fetch has been called
+
             try {
                 const response = await fetch(
                     "http://127.0.0.1:5000/api/shorts?query=funny"
@@ -57,6 +40,19 @@ const App = () => {
         fetchStreamUrls();
     }, []); // Empty dependency array ensures this runs once when the component mounts
 
+    // Handle mute/unmute toggle for all players
+    const handleMuteUnmuteAll = () => {
+        setIsMuted((prevMuted) => !prevMuted); // Toggle the mute state
+
+        // Apply the new mute status to all players
+        playerRefs.current.forEach((player) => {
+            if (player) {
+                player.seekTo(0); // Reset video to start
+                player.getInternalPlayer().muted = !isMuted; // Mute or unmute
+            }
+        });
+    };
+
     if (loading) {
         return (
             <Container>
@@ -73,8 +69,19 @@ const App = () => {
             <Typography variant="h4" gutterBottom>
                 Video Stream Player Grid
             </Typography>
+
+            {/* Mute/Unmute Button */}
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleMuteUnmuteAll}
+                style={{ marginBottom: "20px" }}
+            >
+                {isMuted ? "Unmute All" : "Mute All"}
+            </Button>
+
             <Grid container spacing={2} justifyContent="center">
-                {videoStreams.map((stream, index) => (
+                {videoStreams.map((url, index) => (
                     <Grid
                         item
                         xs={12}
@@ -83,7 +90,17 @@ const App = () => {
                         style={{ maxWidth: "20%" }} // Forces 5 items per row
                         key={index}
                     >
-                        <VideoPlayer streamUrl={stream} />
+                        <ReactPlayer
+                            ref={(el) => (playerRefs.current[index] = el)} // Assign the player ref
+                            url={url}
+                            playing={true} // Autoplay each video
+                            muted={isMuted} // Mute or unmute based on the state
+                            controls={true} // Show controls (play/pause, volume, etc.)
+                            loop={true} // Loop video playback
+                            width="100%" // Full-width player
+                            height="auto" // Auto-adjust height
+                            volume={0.1} // Set initial volume to 10%
+                        />
                     </Grid>
                 ))}
             </Grid>
