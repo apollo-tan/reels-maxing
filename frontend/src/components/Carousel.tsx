@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
 import { VideoPlayer } from "./VideoPlayer"; // Import your VideoPlayer component
-import { DUMMY_VIDEO } from "../dummy";
 
 interface CarouselProps {
   scrollTop: number;
+  videoStream: string;
 }
 
-const Carousel: React.FC<CarouselProps> = ({ scrollTop }) => {
+const Carousel: React.FC<CarouselProps> = ({ scrollTop, videoStream }) => {
   const carouselRef = useRef<HTMLDivElement>(null);
 
   // Scroll the carousel to the new scrollTop position smoothly
@@ -50,7 +50,7 @@ const Carousel: React.FC<CarouselProps> = ({ scrollTop }) => {
             scrollSnapAlign: "start",
           }}
         >
-          <VideoPlayer streamUrl={DUMMY_VIDEO} />
+          <VideoPlayer streamUrl={videoStream} />
         </Box>
       ))}
     </Box>

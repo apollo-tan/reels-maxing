@@ -17,7 +17,7 @@ const App = () => {
     const fetchStreamUrls = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:5000/api/shorts?query=funny"
+          "http://127.0.0.1:5000/api/shorts?query=keqing"
         );
         const data = await response.json();
 
@@ -108,7 +108,7 @@ const App = () => {
             }}
             key={index}
           >
-            <Carousel scrollTop={scrollTop} />
+            <Carousel scrollTop={scrollTop} videoStream={videoStreams[index]} />
           </Grid>
         ))}
       </Grid>
