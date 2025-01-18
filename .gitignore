@@ -1,24 +1,59 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
+# Operating System files
+.DS_Store
+Thumbs.db
+*.swp
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Node / Vite (Frontend)
+node_modules/
+dist/
+dist-ssr/
+.env
+.env.local
+.env.*.local
+.cache/
+.temp/
+coverage/
+
+# Yarn, npm, pnpm lock files
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# Python / Flask (Backend)
+*.pyc
+__pycache__/
+.env
+venv/
+*.egg-info/
+pip-wheel-metadata/
+
+# Docker
+docker-compose.override.yml
+.docker/
+Dockerfile*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Generated files or build artifacts
+*.tgz
+*.tar.gz
+*.zip
+
+# Miscellaneous
+*.bak
+*.tmp
