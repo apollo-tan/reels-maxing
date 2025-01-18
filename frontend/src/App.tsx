@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 
 import React, { useRef, useEffect, useState } from "react";
+import { Grid, Container, Typography, CircularProgress, Box } from "@mui/material";
 import Carousel from "./components/Carousel";
 
 // Main App component displaying multiple video streams using MUI Grid
@@ -24,30 +25,30 @@ const App = () => {
     const playerRefs = useRef<(ReactPlayer | null)[]>([]); // Store refs for all players
     const fetchRef = useRef(false); // Ref to track if fetch is already done
 
-    // Fetch stream URLs from the Flask API when the component mounts
+    // Fetch stream URLs from the new cached endpoint when the component mounts
     useEffect(() => {
         console.log("useEffect called - Mounting");
         const fetchStreamUrls = async () => {
             if (fetchRef.current) return; // If fetch has already been called, skip
             fetchRef.current = true;
             try {
-                console.log("Fetching stream URLs...");
+                console.log("Fetching cached stream URLs...");
                 const response = await fetch(
-                    "http://127.0.0.1:5000/api/shorts?query=keqing"
+                    "http://127.0.0.1:5000/api/cached_streams" // New endpoint to fetch cached streams
                 );
                 const data = await response.json();
-                console.log("Received stream URLs:", data);
+                console.log("Received cached stream URLs:", data);
 
-                if (data.stream_urls) {
-                    setVideoStreams(data.stream_urls); // Set stream URLs to state
-                }
-            } catch (error) {
-                console.error("Error fetching stream URLs:", error);
-            } finally {
-                setLoading(false); // Stop loading after request is done
-                console.log("Loading complete");
-            }
-        };
+        if (data.stream_urls) {
+          setVideoStreams(data.stream_urls); // Set stream URLs to state
+        }
+      } catch (error) {
+        console.error("Error fetching cached stream URLs:", error);
+      } finally {
+        setLoading(false); // Stop loading after request is done
+        console.log("Loading complete");
+      }
+    };
 
         fetchStreamUrls();
     }, []); // Empty dependency array ensures this runs once when the component mounts
@@ -65,16 +66,16 @@ const App = () => {
         });
     };
 
-    if (loading) {
-        return (
-            <Container>
-                <Typography variant="h4" gutterBottom>
-                    Video Stream Player Grid
-                </Typography>
-                <CircularProgress />
-            </Container>
-        );
-    }
+  if (loading) {
+    return (
+      <Container>
+        <Typography variant="h4" gutterBottom>
+          Video Stream Player Grid
+        </Typography>
+        <CircularProgress />
+      </Container>
+    );
+  }
 
     return (
         <Container
@@ -120,50 +121,31 @@ const App = () => {
                 ></Box>
             </Box>
 
-            <Grid
-                container
-                spacing={2}
-                style={{
-                    padding: "1px",
-                    height: "100%",
-                }}
-            >
-                {Array.from({ length: 10 }).map((_, index) => (
-                    <Grid
-                        item
-                        xs={6}
-                        sm={6}
-                        md={2.4}
-                        style={{
-                            height: "calc(50% - 16px)",
-                        }}
-                        key={index}
-                    >
-                        <Carousel
-                            scrollTop={scrollTop}
-                            videoStream={videoStreams[index]}
-                        />
-                    </Grid>
-                ))}
-            </Grid>
-
-            {/* Mute/Unmute Button */}
-            <Button
-                variant="contained"
-                color={isMuted ? "default" : "primary"}
-                onClick={handleMuteUnmuteAll}
-                style={{
-                    position: "absolute",
-                    bottom: "20px", // Position the button at the bottom
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    zIndex: 20,
-                }}
-            >
-                {isMuted ? "Unmute All" : "Mute All"}
-            </Button>
-        </Container>
-    );
+      <Grid
+        container
+        spacing={2}
+        style={{
+          padding: "1px",
+          height: "100%",
+        }}
+      >
+        {Array.from({ length: 10 }).map((_, index) => (
+          <Grid
+            item
+            xs={6}
+            sm={6}
+            md={2.4}
+            style={{
+              height: "calc(50% - 16px)",
+            }}
+            key={index}
+          >
+            <Carousel scrollTop={scrollTop} videoStream={videoStreams[index]} />
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
+  );
 };
 
 export default App;

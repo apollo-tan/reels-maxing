@@ -4,10 +4,11 @@ import { VideoPlayer } from "./VideoPlayer"; // Import your VideoPlayer componen
 
 interface CarouselProps {
   scrollTop: number;
-  videoStream: string;
+  videoStreams: string[];
+  index: number;
 }
 
-const Carousel: React.FC<CarouselProps> = ({ scrollTop, videoStream }) => {
+const Carousel: React.FC<CarouselProps> = ({ scrollTop, videoStreams, index }) => {
   const carouselRef = useRef<HTMLDivElement>(null);
 
   // Scroll the carousel to the new scrollTop position smoothly
@@ -19,6 +20,9 @@ const Carousel: React.FC<CarouselProps> = ({ scrollTop, videoStream }) => {
       });
     }
   }, [scrollTop]);
+
+  // Calculate the number of boxes needed for the current carousel
+  const renderVideoStreams = videoStreams.slice(index * 5, (index + 1) * 5);
 
   return (
     <Box
@@ -37,9 +41,9 @@ const Carousel: React.FC<CarouselProps> = ({ scrollTop, videoStream }) => {
       }}
     >
       {/* Render items inside the carousel */}
-      {Array.from({ length: 5 }).map((_, index) => (
+      {renderVideoStreams.map((stream, idx) => (
         <Box
-          key={index}
+          key={idx}
           sx={{
             height: "100%", // Full viewport height for each box
             display: "flex",
@@ -50,7 +54,7 @@ const Carousel: React.FC<CarouselProps> = ({ scrollTop, videoStream }) => {
             scrollSnapAlign: "start",
           }}
         >
-          <VideoPlayer streamUrl={videoStream} />
+          <VideoPlayer streamUrl={stream} />
         </Box>
       ))}
     </Box>
