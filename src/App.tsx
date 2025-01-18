@@ -3,12 +3,20 @@ import { Grid, Container, Typography } from '@mui/material';
 
 // Video player component
 const VideoPlayer = ({ videoUrl }: { videoUrl: string }) => {
+  const videoId = videoUrl.split("/").pop(); // Extract video ID from the URL
+  const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+
   return (
     <div className="video-container">
-      <video width="100%" controls>
-        <source src={videoUrl} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+      <iframe
+        width="315"
+        height="560"
+        src={embedUrl}
+        title="YouTube video player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+      ></iframe>
     </div>
   );
 };
@@ -20,6 +28,7 @@ const App = () => {
     "https://www.youtube.com/shorts/yxJok8yu9SE",
     "https://www.youtube.com/shorts/BXnRBZtvxKA",
     "https://www.youtube.com/shorts/6WUqU4K_-MQ",
+    "https://www.youtube.com/shorts/LcVI3AOiPto"
   ]);
 
   return (
