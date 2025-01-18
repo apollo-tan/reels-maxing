@@ -38,24 +38,31 @@ const Carousel: React.FC = () => {
   return (
     <Box
       sx={{
-        height: "100vh", // Full viewport height
-        width: "100vw",
+        height: "100%", // Full viewport height
+        width: "100%",
         overflowY: "scroll",
         scrollSnapType: "y mandatory",
         flexDirection: "column",
-        position: "relative"
+        background: "red",
+        position: "relative",
+        // Hide scrollbar
+        scrollbarWidth: "none", // Firefox
+        "&::-webkit-scrollbar": {
+          display: "none", // Chrome, Safari
+        },
       }}
     >
       {items.map(item => (
         <Box
           key={item}
           sx={{
-            height: "100vh", // Full viewport height for each box
+            height: "100%", // Full viewport height for each box
             display: "flex",
+            padding: "1%",
+            margin: "1%",
             alignItems: "center",
             justifyContent: "center",
             scrollSnapAlign: "start",
-            background: generateRandomColor(), // Random background color
             border: "1px solid black", // Optional: Add border for visibility
           }}
         >
