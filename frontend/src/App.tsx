@@ -5,21 +5,24 @@ import Carousel from "./components/Carousel";
 // Main App component displaying multiple video streams using MUI Grid
 const App = () => {
   const [scrollTop, setScrollTop] = useState<number>(0);
+  const [videoStreams, setVideoStreams] = useState<string[]>([]); // State to hold stream URLs
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
     setScrollTop(e.currentTarget.scrollTop);
   };
-  const [videoStreams, setVideoStreams] = useState<string[]>([]); // State to hold stream URLs
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   // Fetch stream URLs from the Flask API when the component mounts
   useEffect(() => {
+    console.log("useEffect called - Mounting");
     const fetchStreamUrls = async () => {
       try {
+        console.log("Fetching stream URLs...");
         const response = await fetch(
           "http://127.0.0.1:5000/api/shorts?query=keqing"
         );
         const data = await response.json();
+        console.log("Received stream URLs:", data);
 
         if (data.stream_urls) {
           setVideoStreams(data.stream_urls); // Set stream URLs to state
@@ -28,11 +31,17 @@ const App = () => {
         console.error("Error fetching stream URLs:", error);
       } finally {
         setLoading(false); // Stop loading after request is done
+        console.log("Loading complete");
       }
     };
 
     fetchStreamUrls();
   }, []); // Empty dependency array ensures this runs once when the component mounts
+
+  // Debugging state change and re-render
+  useEffect(() => {
+    console.log("videoStreams state changed:", videoStreams);
+  }, [videoStreams]);
 
   if (loading) {
     return (

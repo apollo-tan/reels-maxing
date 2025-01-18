@@ -4,9 +4,15 @@ from flask import Flask, jsonify, request
 from pytubefix import YouTube
 from flask_cors import CORS
 from concurrent.futures import ThreadPoolExecutor
+from flask_caching import Cache  # Import Flask-Caching
 
 app = Flask(__name__)
 CORS(app)
+
+# Configure caching
+app.config['CACHE_TYPE'] = 'simple'  # You can switch to other backends like Redis if needed
+app.config['CACHE_DEFAULT_TIMEOUT'] = 3600  # Cache results for 1 hour (in seconds)
+cache = Cache(app)
 
 def extract_shorts_urls(url, max_results=10):
     """Extracts YouTube Shorts URLs from a given search URL."""
@@ -39,6 +45,7 @@ def get_video_stream_url(url):
         return None
 
 @app.route('/api/shorts', methods=['GET'])
+@cache.cached(query_string=True)  # Cache the results based on the query string (search query)
 def get_shorts_streams():
     """API endpoint to get the streams of YouTube Shorts based on search query."""
     search_query = request.args.get('query', '')
@@ -48,6 +55,8 @@ def get_shorts_streams():
     print(f"Search query received: {search_query}")
     search_url = f"https://www.youtube.com/results?search_query={search_query}"
     print(f"Constructed search URL: {search_url}")
+    
+    # Check if cached result exists for this search query
     shorts_urls = extract_shorts_urls(search_url)
 
     if not shorts_urls:
