@@ -2,8 +2,11 @@ import re
 import requests
 from flask import Flask, jsonify, request
 from pytubefix import YouTube
+from flask_cors import CORS
+from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
+CORS(app)
 
 def extract_shorts_urls(url, max_results=10):
     """Extracts YouTube Shorts URLs from a given search URL."""
@@ -43,13 +46,14 @@ def get_shorts_streams():
     if not shorts_urls:
         return jsonify({"error": "No shorts found"}), 404
     
-    stream_urls = [get_video_stream_url(url) for url in shorts_urls]
+    # Use ThreadPoolExecutor for parallel processing
+    with ThreadPoolExecutor() as executor:
+        stream_urls = list(executor.map(get_video_stream_url, shorts_urls))
     
+    # Filter out None values
     stream_urls = [url for url in stream_urls if url]
     
     return jsonify({"length": len(stream_urls), "stream_urls": stream_urls})
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-#visitorID:
