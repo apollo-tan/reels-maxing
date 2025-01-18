@@ -1,10 +1,22 @@
-// Video player component for a video stream
+import { Box } from "@mui/material";
+
 export const VideoPlayer = ({ streamUrl }: { streamUrl: string }) => {
   return (
-    <div className="video-container">
+    <Box
+      sx={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <video
-        // width="100%"
-        height="100%"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "contain", // Ensure the video fits without cropping
+        }}
         autoPlay
         muted
         playsInline
@@ -13,6 +25,6 @@ export const VideoPlayer = ({ streamUrl }: { streamUrl: string }) => {
       >
         Your browser does not support the video tag.
       </video>
-    </div>
+    </Box>
   );
 };

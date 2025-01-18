@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Box, CircularProgress } from "@mui/material";
+import { Box } from "@mui/material";
 import { useInView } from "react-intersection-observer";
-
-const generateRandomColor = () => {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
+import { VideoPlayer } from "./VideoPlayer"; // Import your VideoPlayer component
+import { DUMMY_VIDEO } from "../dummy";
 
 const Carousel: React.FC = () => {
   const [items, setItems] = useState<number[]>(
@@ -27,7 +20,7 @@ const Carousel: React.FC = () => {
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
-        setItems(prev => [
+        setItems((prev) => [
           ...prev,
           ...Array.from({ length: 5 }, (_, i) => prev.length + i + 1),
         ]);
@@ -43,7 +36,6 @@ const Carousel: React.FC = () => {
         overflowY: "scroll",
         scrollSnapType: "y mandatory",
         flexDirection: "column",
-        background: "red",
         position: "relative",
         // Hide scrollbar
         scrollbarWidth: "none", // Firefox
@@ -52,7 +44,7 @@ const Carousel: React.FC = () => {
         },
       }}
     >
-      {items.map(item => (
+      {items.map((item) => (
         <Box
           key={item}
           sx={{
@@ -63,10 +55,10 @@ const Carousel: React.FC = () => {
             alignItems: "center",
             justifyContent: "center",
             scrollSnapAlign: "start",
-            border: "1px solid black", // Optional: Add border for visibility
+            // Removed the red background and black border
           }}
         >
-          Box {item}
+          <VideoPlayer streamUrl={DUMMY_VIDEO} /> {/* Replace with your video source */}
         </Box>
       ))}
     </Box>

@@ -21,7 +21,7 @@ const App = () => {
         container
         spacing={2}
         style={{
-          padding: "4px",
+          padding: "1px",
           height: "100%",
         }}
       >
@@ -32,7 +32,7 @@ const App = () => {
             sm={6}
             md={2.4} // Not valid: Consider 2 or 3 based on design requirements
             style={{
-              height: "calc(50% - 16px)", // Half of parent height minus spacing
+              height: "calc(50% - 1px)", // Half of parent height minus spacing
             }}
             key={index}
           >
