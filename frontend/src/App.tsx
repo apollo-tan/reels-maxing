@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Grid, Container, Typography, CircularProgress } from "@mui/material";
 
 // Video player component for a video stream
 const VideoPlayer = ({ streamUrl }: { streamUrl: string }) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // useEffect(() => {
-  //   if (videoRef.current) {
-  //     // Set volume to 50% when the video is ready
-  //     videoRef.current.volume = 0.5;
-  //   }
-  // }, []);
+    useEffect(() => {
+        if (videoRef.current) {
+            // Set volume to 50% when the video is ready
+            videoRef.current.volume = 0.5;
+        }
+    }, []);
 
-  return (
-    <div className="video-container">
-      <video
-        ref={videoRef}
-        width="100%"
-        height="315"
-        autoPlay
-        muted // Ensure it's not muted
-        playsInline
-        loop
-        src={streamUrl}
-      >
-        Your browser does not support the video tag.
-      </video>
-    </div>
-  );
+    return (
+        <div className="video-container">
+            <video
+                ref={videoRef}
+                width="100%"
+                height="315"
+                autoPlay
+                muted // Ensure it's not muted
+                playsInline
+                loop
+                src={streamUrl}
+            >
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    );
 };
 
 // Main App component displaying multiple video streams using MUI Grid
