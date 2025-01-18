@@ -1,4 +1,3 @@
-import React from "react";
 import { Grid, Container, Typography } from "@mui/material";
 
 // Video player component for a video stream
