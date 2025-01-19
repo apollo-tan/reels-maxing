@@ -46,8 +46,6 @@ We successfully executed our idea despite facing numerous challenges. Overcoming
 - **Multi-platform integration:** Adding Instagram Reels and TikTok to create a unified platform for brainrot enthusiasts.
 - **Content grouping:** Implementing a feature to group videos with similar audio for a more cohesive viewing experience.
 
-Here’s a rephrased version:  
-
 ## Technical Details  
 - The application works best with Microsoft Edge when the following settings are enabled:  
   - **Cookies and Site Permissions**  
