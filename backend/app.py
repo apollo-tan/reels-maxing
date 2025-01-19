@@ -78,7 +78,6 @@ def fetch_and_cache_streams():
     print(f"Successfully cached {len(cached_streams)} streams.")
 
 @app.route('/api/shorts', methods=['GET'])
-@cache.cached(query_string=True)  # Cache the results based on the query string (search query)
 def get_shorts_streams():
     """API endpoint to get the streams of YouTube Shorts based on search query."""
     search_query = request.args.get('query', '')

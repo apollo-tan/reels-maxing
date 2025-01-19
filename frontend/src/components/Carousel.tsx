@@ -8,7 +8,7 @@ interface CarouselProps {
   index: number;
 }
 
-const Carousel: React.FC<CarouselProps> = ({ scrollTop, videoStreams, index }) => {
+const Carousel: React.FC<CarouselProps> = ({ scrollTop, z, index }) => {
   const carouselRef = useRef<HTMLDivElement>(null);
 
   // Scroll the carousel to the new scrollTop position smoothly

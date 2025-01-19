@@ -13,11 +13,65 @@ const App = () => {
   const [scrollTop, setScrollTop] = useState<number>(0);
   const [videoStreams, setVideoStreams] = useState<string[]>([]); // State to hold stream URLs
   const [loading, setLoading] = useState<boolean>(true); // Loading state
+  const [capacity, setCapacity] = useState<number>(50);
+
+  const boxRef = useRef<HTMLDivElement | null>(null); // Create a reference to the Box element
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
-    setScrollTop(e.currentTarget.scrollTop);
+    const scrollTop = e.currentTarget.scrollTop;
+    setScrollTop(scrollTop);
+
+    console.log(`ScrollTop updated: ${scrollTop}`);
+
+    // Calculate 60vh in pixels dynamically
+    const thresholdInPixels = (60 / 100) * window.innerHeight;
+    console.log(`Threshold in pixels (60vh): ${thresholdInPixels}`);
+
+    const remainingCapacity = capacity - scrollTop / thresholdInPixels;
+    console.log(`Remaining capacity: ${remainingCapacity}`);
+
+    if (remainingCapacity < 50) {
+      console.log(
+        `Threshold met. Incrementing capacity and fetching more streams.`
+      );
+
+      // Increment capacity by 10 before fetching more streams
+      setCapacity(prevCapacity => {
+        const newCapacity = prevCapacity + 10;
+        console.log(`Updated capacity: ${newCapacity}`);
+
+        fetchMoreStreamUrls(); // Trigger fetching additional streams
+        return newCapacity;
+      });
+    } else {
+      console.log(`Threshold not met. No action taken.`);
+    }
   };
 
+  const fetchMoreStreamUrls = async () => {
+    try {
+      console.log("Fetching more stream URLs...");
+      const searchQuery = "keqing"; // Replace with dynamic search query if needed
+      const response = await fetch(
+        "http://127.0.0.1:5000/api/shorts?query=mavuika"
+      );
+      if (!response.ok) {
+        console.error("Failed to fetch more streams:", response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data.stream_urls)
+      if (data.stream_urls) {
+        setVideoStreams(prevStreams => [...prevStreams, ...data.stream_urls]); // Append new streams
+        console.log(videoStreams.length);
+      } else {
+        console.warn("No additional streams found.");
+      }
+    } catch (error) {
+      console.error("Error fetching additional stream URLs:", error);
+    }
+  };
   // Fetch stream URLs from the new cached endpoint when the component mounts
   useEffect(() => {
     console.log("useEffect called - Mounting");
@@ -49,6 +103,10 @@ const App = () => {
     console.log("videoStreams state changed:", videoStreams);
   }, [videoStreams]);
 
+  useEffect(() => {
+    console.error(videoStreams.length);
+  }, [videoStreams.length]);
+
   if (loading) {
     return (
       <Container>
@@ -60,7 +118,7 @@ const App = () => {
     );
   }
 
-  console.log(videoStreams.length * 6)
+  console.log(videoStreams.length * 6);
 
   return (
     <Container
@@ -79,6 +137,7 @@ const App = () => {
       }}
     >
       <Box
+        ref={boxRef} // Assign the ref to the Box component
         sx={{
           position: "absolute",
           top: 0,
