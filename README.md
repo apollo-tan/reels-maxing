@@ -1,8 +1,8 @@
-[![Watch the video](https://img.youtube.com/vi/pESlgwTW6Mo/hqdefault.jpg)](https://www.youtube.com/embed/pESlgwTW6Mo)
-
-![alt text](image.png)
 
 # ReelsMaxing
+## Video Demo
+[![Watch the video](https://img.youtube.com/vi/pESlgwTW6Mo/hqdefault.jpg)](https://www.youtube.com/embed/pESlgwTW6Mo)
+
 ## Inspiration
 Many of us these days love doom-scrolling through TikTok, Instagram Reels, and YouTube Shorts to destress or engage in revenge bedtime procrastination. However, on mobile devices, using a portrait view limits viewers to watching one video at a time. Even on laptops, all our beloved platforms only render one video at a time.
 
