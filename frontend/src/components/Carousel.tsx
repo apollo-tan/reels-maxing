@@ -29,7 +29,8 @@ const Carousel: React.FC<CarouselProps> = ({
     console.log("hi");
     console.log(videoStreams.length);
     // Calculate the number of boxes needed for the current carousel
-    const renderVideoStreams = videoStreams.slice(index * 5, (index + 1) * 5);
+    const renderVideoStreams = videoStreams.slice(index * 15, (index + 1) * 15);
+    console.log(renderVideoStreams.length)
 
     return (
         <Box
