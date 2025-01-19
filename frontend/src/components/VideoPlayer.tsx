@@ -24,7 +24,7 @@ export const VideoPlayer = ({
                     objectFit: "contain", // Ensure the video fits without cropping
                 }}
                 autoPlay
-                muted={isMuted} // Use the isMuted prop to control mute state
+                muted={false} // Use the isMuted prop to control mute state
                 playsInline
                 loop
                 src={streamUrl}
