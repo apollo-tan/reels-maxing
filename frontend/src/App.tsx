@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 
 import React, { useRef, useEffect, useState } from "react";
-import { Grid, Container, Typography, CircularProgress, Box } from "@mui/material";
 import Carousel from "./components/Carousel";
 
 // Main App component displaying multiple video streams using MUI Grid
@@ -24,6 +23,7 @@ const App = () => {
     const [isMuted, setIsMuted] = useState<boolean>(true); // State to manage mute/unmute status
     const playerRefs = useRef<(ReactPlayer | null)[]>([]); // Store refs for all players
     const fetchRef = useRef(false); // Ref to track if fetch is already done
+    const buttonRef = useRef<HTMLButtonElement | null>(null); // Button ref
 
     // Fetch stream URLs from the new cached endpoint when the component mounts
     useEffect(() => {
@@ -39,16 +39,16 @@ const App = () => {
                 const data = await response.json();
                 console.log("Received cached stream URLs:", data);
 
-        if (data.stream_urls) {
-          setVideoStreams(data.stream_urls); // Set stream URLs to state
-        }
-      } catch (error) {
-        console.error("Error fetching cached stream URLs:", error);
-      } finally {
-        setLoading(false); // Stop loading after request is done
-        console.log("Loading complete");
-      }
-    };
+                if (data.stream_urls) {
+                    setVideoStreams(data.stream_urls); // Set stream URLs to state
+                }
+            } catch (error) {
+                console.error("Error fetching cached stream URLs:", error);
+            } finally {
+                setLoading(false); // Stop loading after request is done
+                console.log("Loading complete");
+            }
+        };
 
         fetchStreamUrls();
     }, []); // Empty dependency array ensures this runs once when the component mounts
@@ -56,26 +56,18 @@ const App = () => {
     // Handle mute/unmute toggle for all players
     const handleMuteUnmuteAll = () => {
         setIsMuted((prevMuted) => !prevMuted); // Toggle the mute state
-
-        // Apply the new mute status to all players
-        playerRefs.current.forEach((player) => {
-            if (player) {
-                player.seekTo(0); // Reset video to start
-                player.getInternalPlayer().muted = !isMuted; // Mute or unmute
-            }
-        });
     };
 
-  if (loading) {
-    return (
-      <Container>
-        <Typography variant="h4" gutterBottom>
-          Video Stream Player Grid
-        </Typography>
-        <CircularProgress />
-      </Container>
-    );
-  }
+    if (loading) {
+        return (
+            <Container>
+                <Typography variant="h4" gutterBottom>
+                    Video Stream Player Grid
+                </Typography>
+                <CircularProgress />
+            </Container>
+        );
+    }
 
     return (
         <Container
@@ -92,7 +84,25 @@ const App = () => {
                 justifyContent: "center",
                 position: "relative",
             }}
+            onScroll={handleMuteUnmuteAll}
+
+            //      onMouseOver={handleMuteUnmuteAll}
         >
+            {/* Mute/Unmute Button */}
+            <Button
+                ref={buttonRef}
+                variant="contained"
+                color="primary"
+                onClick={handleMuteUnmuteAll}
+                style={{
+                    position: "absolute",
+                    top: "10px",
+                    left: "10px",
+                    zIndex: 20,
+                }}
+            >
+                {isMuted ? "Unmute All" : "Mute All"}
+            </Button>
             <Box
                 sx={{
                     position: "absolute",
@@ -113,7 +123,7 @@ const App = () => {
             >
                 <Box
                     sx={{
-                        height: "200vh", // Content taller than the container to make scrolling possible
+                        height: `${videoStreams.length * 6}vh`, // Content taller than the container to make scrolling possible
                         display: "flex",
                         flexDirection: "column",
                         scrollSnapAlign: "start", // Snap to the start of each item
@@ -121,31 +131,36 @@ const App = () => {
                 ></Box>
             </Box>
 
-      <Grid
-        container
-        spacing={2}
-        style={{
-          padding: "1px",
-          height: "100%",
-        }}
-      >
-        {Array.from({ length: 10 }).map((_, index) => (
-          <Grid
-            item
-            xs={6}
-            sm={6}
-            md={2.4}
-            style={{
-              height: "calc(50% - 16px)",
-            }}
-            key={index}
-          >
-            <Carousel scrollTop={scrollTop} videoStream={videoStreams[index]} />
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
-  );
+            <Grid
+                container
+                spacing={2}
+                style={{
+                    padding: "1px",
+                    height: "100%",
+                }}
+            >
+                {Array.from({ length: 10 }).map((_, index) => (
+                    <Grid
+                        item
+                        xs={6}
+                        sm={6}
+                        md={2.4}
+                        style={{
+                            height: "calc(50% - 16px)",
+                        }}
+                        key={index}
+                    >
+                        <Carousel
+                            scrollTop={scrollTop}
+                            videoStreams={videoStreams}
+                            index={index}
+                            isMuted={isMuted}
+                        />
+                    </Grid>
+                ))}
+            </Grid>
+        </Container>
+    );
 };
 
 export default App;
