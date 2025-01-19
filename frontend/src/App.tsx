@@ -84,7 +84,6 @@ const App = () => {
                 justifyContent: "center",
                 position: "relative",
             }}
-            onScroll={handleMuteUnmuteAll}
 
             //      onMouseOver={handleMuteUnmuteAll}
         >
